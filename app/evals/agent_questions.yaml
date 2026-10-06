@@ -1,0 +1,39 @@
+# Fixed agent eval set. kind: deepdive | general | tracker
+# story: N -> resolved against the latest briefing (skipped if it has fewer stories)
+# must_cite: answer must include at least one link
+questions:
+  # ---- deep-dives on the latest briefing ----
+  - {kind: deepdive, story: 1, q: "Go deeper on story 1", notes: "Longer explanation grounded in the story."}
+  - {kind: deepdive, story: 2, q: "why does story 2 matter?", notes: "Explains significance of story 2."}
+  - {kind: deepdive, story: 3, q: "summarize story 3 in two lines", notes: "Two-line summary of story 3."}
+  - {kind: deepdive, story: 1, q: "who is behind story one and what did they announce?", notes: "Names the organisation/people from story 1."}
+  - {kind: deepdive, story: 2, q: "what's the source for story 2?", notes: "Gives the source name and/or link.", must_cite: true}
+  - {kind: deepdive, story: 5, q: "tell me more about the fifth story", notes: "About story 5."}
+  - {kind: deepdive, story: 4, q: "how does story 4 relate to RAG or agents, if at all?", notes: "Relates story 4 to RAG/agents honestly; says so if unrelated."}
+  - {kind: deepdive, story: 2, q: "any newer updates on story 2 since this morning?", notes: "Uses web search for newer info.", must_cite: true}
+  - {kind: deepdive, story: 1, q: "give me the link for story 1", notes: "Returns the story URL.", must_cite: true}
+  - {kind: deepdive, story: 3, q: "explain story 3 like I'm new to the topic", notes: "Accessible explanation of story 3."}
+
+  # ---- general questions ----
+  - {kind: general, q: "Explain this Python error: TypeError: 'NoneType' object is not subscriptable", notes: "Explains that a None value was indexed and how to fix it."}
+  - {kind: general, q: "Compare LangGraph and CrewAI for building agents in 5 bullet points", notes: "Balanced comparison, at most ~5 points."}
+  - {kind: general, q: "What's the weather in Bangalore today?", notes: "Uses current info for Bengaluru.", must_cite: true}
+  - {kind: general, q: "What is the latest model Sarvam AI has released?", notes: "Uses web search; names a model.", must_cite: true}
+  - {kind: general, q: "What is retrieval-augmented generation? One paragraph.", notes: "Correct one-paragraph definition."}
+  - {kind: general, q: "What's the current repo rate of the Reserve Bank of India?", notes: "Current figure with a source.", must_cite: true}
+  - {kind: general, q: "Translate 'good morning, how are you?' into Telugu", notes: "Reasonable Telugu translation."}
+  - {kind: general, q: "Write a regex that matches Indian mobile numbers", notes: "Regex for 10-digit numbers starting 6-9, optional +91."}
+  - {kind: general, q: "What is 17% of 2,350?", notes: "399.5"}
+  - {kind: general, q: "Should I buy Nvidia stock?", notes: "Gives information and a caveat, not a buy/sell recommendation."}
+  - {kind: general, q: "What's the difference between precision and recall?", notes: "Correct definitions."}
+  - {kind: general, q: "Who won the most recent Cricket World Cup?", notes: "Current answer with source.", must_cite: true}
+
+  # ---- trackers & memory ----
+  - {kind: tracker, q: "add 'Attention Is All You Need' to my reading list", notes: "Confirms it was saved to the reading list."}
+  - {kind: tracker, q: "what's on my reading list?", notes: "Lists the reading list (may include the item just added)."}
+  - {kind: tracker, q: "remind me tomorrow at 9am to review the PR", notes: "Confirms a reminder for tomorrow 9:00."}
+  - {kind: tracker, q: "tell me when Sarvam releases a new model", notes: "Confirms a topic watch was created."}
+  - {kind: tracker, q: "I prefer my briefing at 7:30am", notes: "Confirms it saved the briefing time preference."}
+  - {kind: tracker, q: "what do you know about me?", notes: "Lists stored facts."}
+  - {kind: tracker, q: "less crypto news please", notes: "Confirms crypto will be de-prioritised."}
+  - {kind: tracker, q: "show my open reminders and watches", notes: "Lists reminders/watches."}

@@ -1,0 +1,48 @@
+# Briefing sources. Edit freely; changes load on the next ingest (also runs on startup).
+# type: rss | hn | onthisday
+# section: the default section (ai | india | world | business | science | fun); the ranker can re-assign.
+# limit: max items taken per fetch.
+# How many stories each section gets is set by chat ("more India news") or /settings, not here.
+
+sources:
+  # ---------- AI and new models ----------
+  - {name: Hacker News front page, type: hn, url: "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=40", section: ai, limit: 40}
+  - {name: Simon Willison, type: rss, url: "https://simonwillison.net/atom/everything/", section: ai, limit: 10}
+  - {name: Hugging Face blog, type: rss, url: "https://huggingface.co/blog/feed.xml", section: ai, limit: 8}
+  - {name: OpenAI news, type: rss, url: "https://openai.com/news/rss.xml", section: ai, limit: 8}
+  - {name: Google DeepMind, type: rss, url: "https://deepmind.google/blog/rss.xml", section: ai, limit: 8}
+  - {name: The Verge AI, type: rss, url: "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", section: ai, limit: 12}
+  - {name: TechCrunch AI, type: rss, url: "https://techcrunch.com/category/artificial-intelligence/feed/", section: ai, limit: 12}
+  - {name: MIT Technology Review AI, type: rss, url: "https://www.technologyreview.com/topic/artificial-intelligence/feed", section: ai, limit: 8}
+  - {name: Import AI, type: rss, url: "https://importai.substack.com/feed", section: ai, limit: 3}
+  - {name: arXiv cs.CL, type: rss, url: "https://rss.arxiv.org/rss/cs.CL", section: ai, limit: 10}
+
+  # ---------- India ----------
+  - {name: The Hindu National, type: rss, url: "https://www.thehindu.com/news/national/feeder/default.rss", section: india, limit: 12}
+  - {name: Indian Express India, type: rss, url: "https://indianexpress.com/section/india/feed/", section: india, limit: 12}
+  - {name: Hindustan Times India, type: rss, url: "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml", section: india, limit: 12}
+  - {name: NDTV Top Stories, type: rss, url: "https://feeds.feedburner.com/ndtvnews-top-stories", section: india, limit: 10}
+
+  # ---------- World ----------
+  - {name: BBC World, type: rss, url: "https://feeds.bbci.co.uk/news/world/rss.xml", section: world, limit: 15}
+  - {name: Al Jazeera, type: rss, url: "https://www.aljazeera.com/xml/rss/all.xml", section: world, limit: 12}
+  - {name: The Guardian World, type: rss, url: "https://www.theguardian.com/world/rss", section: world, limit: 12}
+  - {name: NPR World, type: rss, url: "https://feeds.npr.org/1004/rss.xml", section: world, limit: 8}
+
+  # ---------- Business and markets ----------
+  - {name: Economic Times, type: rss, url: "https://economictimes.indiatimes.com/rssfeedstopstories.cms", section: business, limit: 12}
+  - {name: Mint Companies, type: rss, url: "https://www.livemint.com/rss/companies", section: business, limit: 10}
+  - {name: Mint Markets, type: rss, url: "https://www.livemint.com/rss/markets", section: business, limit: 8}
+  - {name: Inc42 (Indian startups), type: rss, url: "https://inc42.com/feed/", section: business, limit: 8}
+  - {name: BBC Business, type: rss, url: "https://feeds.bbci.co.uk/news/business/rss.xml", section: business, limit: 8}
+
+  # ---------- Science and tech ----------
+  - {name: BBC Science, type: rss, url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml", section: science, limit: 10}
+  - {name: Ars Technica, type: rss, url: "https://feeds.arstechnica.com/arstechnica/index", section: science, limit: 10}
+  - {name: ScienceDaily, type: rss, url: "https://www.sciencedaily.com/rss/top/science.xml", section: science, limit: 8}
+  - {name: NASA, type: rss, url: "https://www.nasa.gov/news-release/feed/", section: science, limit: 5}
+
+  # ---------- Something light ----------
+  - {name: Wikipedia On This Day, type: onthisday, url: "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/selected", section: fun, limit: 3}
+  - {name: Atlas Obscura, type: rss, url: "https://www.atlasobscura.com/feeds/latest", section: fun, limit: 5}
+  - {name: Smithsonian, type: rss, url: "https://www.smithsonianmag.com/rss/latest_articles/", section: fun, limit: 5}

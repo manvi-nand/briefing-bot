@@ -322,3 +322,47 @@ async def _async_result(value):
     return value
 
 
+
+
+async def test_heartbeat_noop_without_url(monkeypatch):
+    from app import heartbeat
+    from app.config import Settings
+
+    monkeypatch.setattr(heartbeat, "get_settings", lambda: Settings(heartbeat_url="", briefing_heartbeat_url=""))
+    called = []
+    monkeypatch.setattr("httpx.AsyncClient.get", lambda self, url: called.append(url))
+    await heartbeat.ping("alive")
+    await heartbeat.ping("briefing")
+    assert called == []  # no URL configured -> no request made
+
+
+async def test_heartbeat_pings_configured_url(monkeypatch):
+    from app import heartbeat
+    from app.config import Settings
+
+    monkeypatch.setattr(
+        heartbeat, "get_settings",
+        lambda: Settings(heartbeat_url="https://hc-ping.com/alive-id", briefing_heartbeat_url="https://hc-ping.com/briefing-id"),
+    )
+    called = []
+
+    async def fake_get(self, url):
+        called.append(url)
+
+    monkeypatch.setattr("httpx.AsyncClient.get", fake_get)
+    await heartbeat.ping("alive")
+    await heartbeat.ping("briefing")
+    assert called == ["https://hc-ping.com/alive-id", "https://hc-ping.com/briefing-id"]
+
+
+async def test_heartbeat_swallows_errors(monkeypatch):
+    from app import heartbeat
+    from app.config import Settings
+
+    monkeypatch.setattr(heartbeat, "get_settings", lambda: Settings(heartbeat_url="https://hc-ping.com/x"))
+
+    async def boom(self, url):
+        raise ConnectionError("network down")
+
+    monkeypatch.setattr("httpx.AsyncClient.get", boom)
+    await heartbeat.ping("alive")  # must not raise -- a monitoring ping can't be allowed to break anything

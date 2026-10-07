@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy import select
 
-from app import trackers
+from app import heartbeat, trackers
 from app.briefing import dedupe, ingest, pipeline
 from app.channels import primary_channel
 from app.config import get_settings
@@ -99,5 +99,6 @@ def build_scheduler() -> AsyncIOScheduler:
     sched.add_job(watch_job, "cron", hour="10,14,18,22", minute=5, id="watches", coalesce=True)
     sched.add_job(pipeline.cleanup_audio, "cron", hour=3, minute=30, id="cleanup_audio", coalesce=True)
     sched.add_job(trackers.send_weekly_summary, "cron", day_of_week="sun", hour=19, minute=0, id="weekly")
+    sched.add_job(lambda: heartbeat.ping("alive"), "interval", minutes=5, id="heartbeat", coalesce=True)
     log.info("scheduler started (briefing time comes from chat-editable prefs; see /settings)")
     return sched

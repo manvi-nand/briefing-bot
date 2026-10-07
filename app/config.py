@@ -79,6 +79,10 @@ class Settings(BaseSettings):
     public_base_url: str = ""  # e.g. https://mybot.up.railway.app (for Telegram webhook)
     log_level: str = "INFO"
 
+    # ---- External uptime alerting (optional; app/heartbeat.py) ----
+    heartbeat_url: str = ""           # e.g. a healthchecks.io ping URL; pinged every 5 min while alive
+    briefing_heartbeat_url: str = ""  # pinged once after each successful briefing delivery
+
     @field_validator("*", mode="before")
     @classmethod
     def _drop_inline_comment(cls, v):

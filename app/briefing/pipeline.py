@@ -12,6 +12,7 @@ from sqlalchemy import select
 from app import costs
 from app.briefing import dedupe, ingest, rank, script
 from app.channels import Button, primary_channel
+from app import heartbeat
 from app.channels.base import send_category
 from app.config import get_settings
 from app.db import session_scope
@@ -129,6 +130,7 @@ async def deliver_notice(ep: Episode) -> None:
                       text=f"briefing notice {label}", episode_id=ep.id))
         e = await s.get(Episode, ep.id)
         e.status, e.sent_at = "sent", datetime.now(timezone.utc)
+    await heartbeat.ping("briefing")
 
 
 async def play_episode(episode_id: int | None = None) -> None:

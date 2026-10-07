@@ -27,9 +27,10 @@ Accounts and keys are listed in `SETUP_REQUIREMENTS.md`.
 | `app/agent/` | Gemini function-calling loop (`agent.py`) and its tools (`tools.py`) |
 | `app/channels/` | `telegram.py` (in use), `whatsapp.py` (ready for later), shared interface `base.py` |
 | `app/speech/` | Sarvam TTS/STT, WAV stitching, OGG/Opus encoding |
-| `app/trackers.py` | memory facts, lists, reminders, topic watches, feedback weights, weekly summary |
+| `app/trackers.py` | memory facts, lists, reminders, topic watches, feedback weights, weekly summary (now includes a 7-day cost total) |
 | `app/prefs.py` | chat-editable briefing settings: weekday/weekend time, length, section mix, skipped topics, focus, pause |
-| `app/scheduler.py` | 1-minute tick reads the settings (builds 30 min early, delivers on time, catches up within 4 h), reminders, watches 4× a day, weekly summary Sunday 19:00 |
+| `app/scheduler.py` | 1-minute tick reads the settings (builds 30 min early, delivers on time, catches up within 4 h), reminders, watches 4× a day, weekly summary Sunday 19:00, heartbeat ping every 5 min |
+| `app/heartbeat.py` | optional external uptime alerting — see "Uptime alerting" below |
 | `app/costs.py` | usage log per stage and the daily budget cap |
 | `app/llm.py` | Gemini wrapper: thinking level, JSON output, retries, cost logging, Google-Search-grounded search |
 | `app/evals/` | ranking (Jev vs LLM), script faithfulness, agent question set |
@@ -90,6 +91,16 @@ deploy the `Dockerfile`, attach a Postgres that has pgvector, and set the env va
 Webhook mode is optional: set `TELEGRAM_MODE=webhook`, `PUBLIC_BASE_URL` and `TELEGRAM_WEBHOOK_SECRET`.
 
 Run **one** instance only. The scheduler runs inside the app process, so two copies would send two briefings.
+
+### Uptime alerting
+
+Once this isn't running on your laptop, something has to notice if it goes down — and the bot can't tell you
+itself if the whole process is dead. Create a free account at [healthchecks.io](https://healthchecks.io), add a
+check expecting a ping roughly every 10 minutes, and put its ping URL in `HEARTBEAT_URL`; the scheduler pings it
+every 5 minutes while the app is alive, and healthchecks.io emails/texts you (your choice) the moment it stops
+hearing from you. Optionally add a second check expecting one ping a day around your briefing time, and put its
+URL in `BRIEFING_HEARTBEAT_URL` — that one catches a quieter failure: the app staying up but the briefing itself
+silently failing to build after retries. Leave either blank to skip it.
 
 ## Evals (PRD section "Evals and quality metrics")
 

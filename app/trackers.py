@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 import numpy as np
 from sqlalchemy import delete, func, select
 
+from app import costs
 from app.briefing.embed import embed
 from app.channels import primary_channel
 from app.config import get_settings
@@ -225,13 +226,15 @@ async def weekly_summary() -> str:
             (await s.scalars(select(TopicWeight).where(TopicWeight.updated_at >= since).order_by(TopicWeight.weight.desc()))).all()
         )
         notes = list((await s.scalars(select(Feedback.note).where(Feedback.created_at >= since, Feedback.note != ""))).all())
-    lines = [f"📊 Weekly personalization summary: {ups or 0} 👍, {downs or 0} 👎."]
+    week_cost = sum(c for _, _, c in await costs.cost_report(7))
+    lines = [f"📊 Weekly personalization summary: {ups or 0} 👍, {downs or 0} 👎.",
+             f"💰 Spent ${week_cost:.2f} this week (~${week_cost / 7:.2f}/day)."]
     if changed:
         lines.append("Topic weights changed this week:")
         lines += [f"• {tw.topic}: {tw.weight:+.1f}" for tw in changed]
     if notes:
         lines.append("Your notes: " + "; ".join(notes[:5]))
-    if len(lines) == 1:
+    if len(lines) == 2:  # just the summary + cost lines, nothing else happened
         lines.append("No changes this week.")
     return "\n".join(lines)
 

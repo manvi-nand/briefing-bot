@@ -18,7 +18,7 @@ from sqlalchemy import select, text
 from app import llm
 from app.channels.base import Button, Channel, Incoming
 from app.db import engine, init_db, session_scope
-from app.models import Episode, Feedback, Item, Tracker
+from app.models import Episode, Feedback, Item, Tracker, TopicWeight
 
 
 async def _db_ok() -> bool:
@@ -232,6 +232,10 @@ async def test_pipeline_build_play_and_feedback(monkeypatch):
     async with session_scope() as s:
         fb = await s.scalar(select(Feedback).where(Feedback.item_id == ep.story_order[0]))
         assert fb.rating == -1
+        await s.delete(fb)
+        tw = await s.get(TopicWeight, "llms")  # this test's fake ranker always tags items "llms"
+        if tw:
+            await s.delete(tw)
 
     # Non-owner is ignored
     n_before = len(ch.sent)
@@ -306,3 +310,23 @@ async def test_due_tick_runs_task_and_repeating_reminder(monkeypatch):
             row = await s.get(Tracker, tid)
             assert row.status == "open" and row.due_at > now                 # rescheduled, not closed
             await s.delete(row)
+
+
+async def test_weekly_summary_includes_cost():
+    from app import costs, trackers
+    from app.models import UsageEvent
+
+    tag = uuid.uuid4().hex[:6]
+    baseline = sum(c for _, _, c in await costs.cost_report(7))  # robust to any other cost already logged
+    async with session_scope() as s:
+        s.add(UsageEvent(provider="gemini", stage=f"chat_{tag}", units={}, cost_usd=1.4))
+        s.add(UsageEvent(provider="sarvam", stage=f"tts_{tag}", units={}, cost_usd=0.7))
+
+    summary = await trackers.weekly_summary()
+    expected = baseline + 2.1
+    assert f"Spent ${expected:.2f} this week (~${expected / 7:.2f}/day)" in summary
+
+    async with session_scope() as s:
+        from sqlalchemy import delete
+
+        await s.execute(delete(UsageEvent).where(UsageEvent.stage.in_([f"chat_{tag}", f"tts_{tag}"])))
